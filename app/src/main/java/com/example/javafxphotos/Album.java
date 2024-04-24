@@ -29,8 +29,8 @@ public class Album implements Serializable {
         name = title;
     }
 
-    public void add_photo(String location, String caption, List<Tag> tags){
-        photos.add(new Photo(location, caption));
+    public void add_photo(String location, List<Tag> tags){
+        photos.add(new Photo(location));
     }
     public void add_photo(Photo photo){
         photos.add(photo);
@@ -46,9 +46,6 @@ public class Album implements Serializable {
                 action.accept(photo);
             }
         }
-    }
-    void caption_photo(String location,String caption){
-        findphoto_action(location,photo->photo.change_caption(caption));
     }
 
 }

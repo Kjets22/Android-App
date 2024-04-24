@@ -1,5 +1,6 @@
 package com.example.javafxphotos;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -7,11 +8,17 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -33,9 +40,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public List<Album> albums;
+    Button openAlbum;
+    public static Album currentAlbum;
+    public List<String> albumNames;
     private ListView listView;
-    private PopupWindow popupWindow;
-
+    static String selectedValue;
     File file;
 
     @Override
@@ -44,70 +53,88 @@ public class MainActivity extends AppCompatActivity {
         //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         albums = new ArrayList<>();
-
         File filesDir = getFilesDir();
-
-        // Specify the file name
         String fileName = "file.ser";
-
-        // Construct the file path
         file = new File(filesDir, fileName);
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        */
         try {
             albums = readAlbumList();
+            albumNames = getAlbumNames(albums);
         } catch (IOException | ClassNotFoundException e) {
              System.out.println("e");
         }
-
         listView = findViewById(R.id.albums_list);
+        openAlbum = findViewById(R.id.openAlbum);
 
-        NameAdapter adapter = new NameAdapter(this, R.layout.albums_page, albums);
+        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.albums_page, albumNames);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            private static final long DOUBLE_CLICK_TIME_DELTA = 300; // Time in milliseconds for double click
+            long lastClickTime = 0;
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long clickTime = System.currentTimeMillis();
+                selectedValue = (String) parent.getItemAtPosition(position);
+                for(int i = 0; i < albums.size(); i++){
+                    if (albums.get(i).getName().equals(selectedValue)){
+                        currentAlbum = albums.get(i);
+                    }
+                }
+                if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
+                    // Double click detected
+                    // Open the page here, for example:
+                    Intent intent = new Intent(MainActivity.this, PhotosPage.class);
+                    try {
+                        writeAlbumList(albums);
+                    } catch (IOException e) {
+                        System.out.print("e");
+                    }
+                    startActivity(intent);
+                }
+                lastClickTime = clickTime;
+            }
+        });
 
-
+        openAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedValue != null) {
+                    // Start a new activity based on the selected item
+                    Intent intent = new Intent(MainActivity.this, EditAlbumsPage.class);
+                    try {
+                        writeAlbumList(albums);
+                    } catch (IOException e) {
+                        System.out.print("e");
+                    }
+                    startActivity(intent);
+                }
+            }
+        });
     }
+
 
     public void openAlbum(View view) {
         startActivity(new Intent(this, PhotosPage.class));
+
     }
 
     public void addAlbum(View view) {
         startActivity(new Intent(this, AddAlbumPage.class));
     }
 
-    private void showPopupWindow() {
-        // Inflate the popup_window.xml layout file
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        ViewGroup parentView = findViewById(R.id.main);
-        View popupView = inflater.inflate(R.layout.albums_error, parentView);
-
-        // Initialize a new instance of PopupWindow
-        popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // Set an animation for the popup window
-        popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-
-        // Set a background drawable with round corners
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        // Set focusable and outside touchable to dismiss the popup window
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-
-        // Show the popup window at the center of the screen
-        popupWindow.showAtLocation(
-                findViewById(R.id.main),  // Location to display popup window
-                Gravity.CENTER,                   // Exact position of layout to display popup
-                0,                               // X offset
-                0                                // Y offset
-        );
+    public List<String> getAlbumNames(List<Album> list){
+        List<String> listNames = new ArrayList<>();
+         for(int i = 0; i < list.size(); i++){
+            listNames.add(list.get(i).getName());
+        }
+         return listNames;
     }
+
+
+    public static String getName(){
+        return selectedValue;
+    }
+
+    public static Album getCurrentAlbum(){return currentAlbum;}
 
 
 

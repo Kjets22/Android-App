@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Photo implements Serializable {
-    String caption;
     String location;
     private List<Tag> tags = new ArrayList<>();
     private List<Album> albums = new ArrayList<>();
     private static final long serialVersionUID = 1L;
-    public Photo(String location, String caption){
+    public Photo(String location){
         this.location = location;
-        this.caption = caption;
     }
 
 
@@ -33,15 +31,6 @@ public class Photo implements Serializable {
     public List<Album> getAlbums(){
         return albums;
     }
-
-    public void change_caption(String caption){
-        this.caption=caption;
-    }
-
-    public String get_caption(){
-        return caption;
-    }
-
     public void add_tag(Tag e){
         getTags().add(e);
     }

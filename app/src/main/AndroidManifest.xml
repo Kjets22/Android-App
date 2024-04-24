@@ -13,6 +13,10 @@
         android:theme="@style/Theme.JavaFXPhotos"
         tools:targetApi="31">
         <activity
+            android:name=".EditAlbumsPage"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".AddAlbumPage"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
