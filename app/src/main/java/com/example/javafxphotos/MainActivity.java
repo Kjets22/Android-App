@@ -39,7 +39,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public List<Album> albums;
+    public static List<Album> albums;
     Button openAlbum;
     public static Album currentAlbum;
     public List<String> albumNames;
@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
         file = new File(filesDir, fileName);
         try {
             albums = readAlbumList();
-            albumNames = getAlbumNames(albums);
         } catch (IOException | ClassNotFoundException e) {
              System.out.println("e");
         }
+        albumNames = getAlbumNames(albums);
         listView = findViewById(R.id.albums_list);
         openAlbum = findViewById(R.id.openAlbum);
 
@@ -102,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, EditAlbumsPage.class);
                     try {
                         writeAlbumList(albums);
+                        startActivity(intent);
                     } catch (IOException e) {
                         System.out.print("e");
                     }
-                    startActivity(intent);
                 }
             }
         });
@@ -135,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Album getCurrentAlbum(){return currentAlbum;}
+
+    public static List<Album> getAlbums(){
+        return albums;
+    }
+
 
 
 

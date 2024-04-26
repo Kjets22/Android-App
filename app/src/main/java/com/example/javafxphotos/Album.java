@@ -1,5 +1,7 @@
 package com.example.javafxphotos;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ public class Album implements Serializable {
         name = title;
     }
 
-    public void add_photo(String location, List<Tag> tags){
+    public void add_photo(String location){
         photos.add(new Photo(location));
     }
     public void add_photo(Photo photo){
@@ -42,7 +44,7 @@ public class Album implements Serializable {
 
     public void findphoto_action(String location, Consumer<Photo> action){
         for (Photo photo : photos){
-            if(location.equals(photo.getLocation())){
+            if(location.equals(photo.getPath())){
                 action.accept(photo);
             }
         }

@@ -1,49 +1,71 @@
 package com.example.javafxphotos;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+import java.io.FileNotFoundException;
 import java.util.List;
 
-public class PhotoAdapter extends ArrayAdapter<Photo> {
+public class PhotoAdapter extends BaseAdapter {
+    private Context mContext;
+    private List<Photo> images;
 
-    private LayoutInflater inflater;
-    private static Handler handler = new Handler();
+    public PhotoAdapter(Context context, List<Photo> imageUris) {
+        mContext = context;
+        images = imageUris;
+    }
 
-    public PhotoAdapter(Context context, List<Photo> items) {
-        super(context, 0, items);
-        inflater = LayoutInflater.from(context);
+    @Override
+    public int getCount() {
+        return images.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return images.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        mContext = parent.getContext();
+        ViewHolder viewHolder;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.photos_page, parent, false);
-            holder = new ViewHolder();
-            holder.imageView = convertView.findViewById(R.id.imageView);
-            holder.textView = convertView.findViewById(R.id.textView);
-            convertView.setTag(holder);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.photos_page, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = convertView.findViewById(R.id.imageView);
+            viewHolder.textView = convertView.findViewById(R.id.textView);
+            convertView.setTag(viewHolder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Photo item = getItem(position);
-        holder.textView.setText(item.getLocation());
-
-        // Load image from URL using Thread
-        new Thread(new DownloadImageTask(holder.imageView, item.getLocation())).start();
+        // Load image into ImageView using URI
+        Uri imageUri = Uri.parse(images.get(position).getPath());
+        viewHolder.textView.setText(images.get(position).getPath());
+        Bitmap bitmap;
+        try {
+            bitmap = BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(imageUri));
+            viewHolder.imageView.setImageBitmap(bitmap);
+            mContext.getContentResolver().takePersistableUriPermission(imageUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         return convertView;
     }
@@ -51,42 +73,5 @@ public class PhotoAdapter extends ArrayAdapter<Photo> {
     static class ViewHolder {
         ImageView imageView;
         TextView textView;
-    }
-
-    private static class DownloadImageTask implements Runnable {
-        private final ImageView imageView;
-        private final String imageUrl;
-
-        DownloadImageTask(ImageView imageView, String imageUrl) {
-            this.imageView = imageView;
-            this.imageUrl = imageUrl;
-        }
-
-        @Override
-        public void run() {
-            Bitmap bitmap = downloadBitmap(imageUrl);
-            if (bitmap != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        imageView.setImageBitmap(bitmap);
-                    }
-                });
-            }
-        }
-
-        private Bitmap downloadBitmap(String imageUrl) {
-            try {
-                URL url = new URL(imageUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream inputStream = connection.getInputStream();
-                return BitmapFactory.decodeStream(inputStream);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
     }
 }
