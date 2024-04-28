@@ -1,29 +1,14 @@
 package com.example.javafxphotos;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 
-import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
         albumNames = getAlbumNames(albums);
         listView = findViewById(R.id.albums_list);
         openAlbum = findViewById(R.id.openAlbum);
+
+        findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Search.class);
+                startActivity(intent);
+            }
+        });
 
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.albums_page, albumNames);
         listView.setAdapter(adapter);

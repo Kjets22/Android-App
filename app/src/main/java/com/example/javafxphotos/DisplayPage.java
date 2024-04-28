@@ -7,11 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.io.FileNotFoundException;
 
@@ -27,6 +23,10 @@ public class DisplayPage extends AppCompatActivity {
         currentPhoto = PhotosPage.getCurrentPhoto();
         Uri imageUri = Uri.parse(currentPhoto.getPath());
         Bitmap bitmap;
+        findViewById(R.id.addTag).setOnClickListener(v -> {
+            Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
+            startActivityForResult(intent, 1);
+        });
         try {
             bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
             pic.setImageBitmap(bitmap);
@@ -34,6 +34,18 @@ public class DisplayPage extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            String type = data.getStringExtra("tagType");
+            String value = data.getStringExtra("tagValue");
+            Tag tag=new Tag(type, value);
+            currentPhoto.add_tag(tag);
+            //photo.displayTags();
         }
     }
 }
