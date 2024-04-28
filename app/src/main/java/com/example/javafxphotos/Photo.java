@@ -1,13 +1,14 @@
 package com.example.javafxphotos;
 
 import android.net.Uri;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Photo implements Serializable {
+public class Photo implements Serializable{
     String imagePath;
     private List<Tag> tags = new ArrayList<>();
     private static final long serialVersionUID = 1L;

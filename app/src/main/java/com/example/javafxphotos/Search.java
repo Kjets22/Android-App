@@ -1,5 +1,6 @@
 package com.example.javafxphotos;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,6 +22,8 @@ public class Search extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private String types="";
     public static List<Album> albums;
+    private String search;
+    public static ArrayList<Photo> display;
 
     RadioGroup radioGroup;
 
@@ -60,12 +63,38 @@ public class Search extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Placeholder for search functionality
+                if(types.isEmpty()){
+                    Toast.makeText(Search.this, "you need to fill in type first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                boolean found=false;
+
+                //display.clear();
+
+                display=new ArrayList<>();
+                for (Album album : albums){
+                    for(Photo photo : album.getPhotos()){
+                        found=false;
+                        for(Tag tag : photo.getTags()){
+                            if(tag.value.equalsIgnoreCase(search) && tag.name.equalsIgnoreCase(types)){
+                                found=true;
+                                break;
+                            }
+                        }
+                        if(found){
+                            display.add(photo);
+                        }
+                    }
+                }
+                Toast.makeText(Search.this, "completed", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Search.this, ResultsPage.class);
+                //startActivity(intent);
             }
         });
     }
 
     private void updateAutocomplete(String query) {
+        search=query;
         if(types.isEmpty()){
             Toast.makeText(this, "you need to fill in type first", Toast.LENGTH_SHORT).show();
             return;
@@ -82,7 +111,6 @@ public class Search extends AppCompatActivity {
             }
         }
         adapter.clear();
-        //adapter.clear();
         if (!autocomplete.isEmpty()) {
             adapter.addAll(autocomplete);
         } else {
