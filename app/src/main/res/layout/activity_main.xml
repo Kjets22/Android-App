@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="260dp"
+        android:layout_marginEnd="268dp"
         android:onClick="openAlbum"
         android:text="Open Album"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,7 @@
     <ListView
         android:id="@+id/albums_list"
         android:layout_width="0dp"
-        android:layout_height="480dp"
+        android:layout_height="380dp"
         android:layout_marginBottom="4dp"
         android:divider="@color/black"
         android:dividerHeight="1px"
