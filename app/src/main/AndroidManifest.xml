@@ -15,6 +15,11 @@
         android:theme="@style/Theme.JavaFXPhotos">
 
         <activity
+            android:name=".ResultsPage"
+            android:exported="false"
+            android:parentActivityName=".DisplayPage" />
+
+        <activity
             android:name=".MoveAlbumPage"
             android:exported="false"
             android:parentActivityName=".DisplayPage" />

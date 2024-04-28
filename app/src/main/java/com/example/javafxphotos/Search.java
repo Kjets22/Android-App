@@ -88,7 +88,7 @@ public class Search extends AppCompatActivity {
                 }
                 Toast.makeText(Search.this, "completed", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Search.this, ResultsPage.class);
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
     }

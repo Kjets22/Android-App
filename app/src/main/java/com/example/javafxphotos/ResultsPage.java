@@ -16,6 +16,7 @@ public class ResultsPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_search);
+        //Toast.makeText(this, "got into new display", Toast.LENGTH_SHORT).show();
 
         photoList = findViewById(R.id.photosList);
 
