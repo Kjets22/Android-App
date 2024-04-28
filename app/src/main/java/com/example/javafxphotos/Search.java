@@ -7,7 +7,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +19,10 @@ import java.util.List;
 public class Search extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapter;
-    private String types;
+    private String types="";
     public static List<Album> albums;
+
+    RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,9 @@ public class Search extends AppCompatActivity {
         autoCompleteTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                RadioButton selectedRadioButton = findViewById(selectedId);
+                types = selectedRadioButton.getText().toString();
             }
 
             @Override
@@ -58,21 +66,29 @@ public class Search extends AppCompatActivity {
     }
 
     private void updateAutocomplete(String query) {
+        if(types.isEmpty()){
+            Toast.makeText(this, "you need to fill in type first", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Simulate an autocomplete function
         List<String> autocomplete=new ArrayList<>();
         for (Album album : albums){
             for(Photo photo : album.getPhotos()){
                 for(Tag tag : photo.getTags()){
-                    if(tag.value.toLowerCase().startsWith(query.toLowerCase()) && tag.name.toLowerCase().equals(types.toLowerCase())){
+                    if(tag.value.toLowerCase().startsWith(query.toLowerCase()) && tag.name.equalsIgnoreCase(types)){
                         autocomplete.add(tag.value);
                     }
                 }
             }
         }
-        String[] items = new String[]{"Example 1", "Example 2", "Example 3"};
         adapter.clear();
-        adapter.addAll(items);
-        adapter.getFilter().filter(query, null);
+        //adapter.clear();
+        if (!autocomplete.isEmpty()) {
+            adapter.addAll(autocomplete);
+        } else {
+            Toast.makeText(this, "not found", Toast.LENGTH_SHORT).show();
+        }
+        adapter.notifyDataSetChanged();
     }
 }
 
