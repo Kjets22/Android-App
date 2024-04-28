@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -32,9 +33,11 @@ public class PhotosPage extends AppCompatActivity {
     private static final int REQUEST_STORAGE_PERMISSION = 200;
     public List<Photo> photos;
     Album currentAlbum;
+    static Photo currentPhoto;
     Button addImage;
+    Button d;
     private ListView listView;
-    static String selectedValue;
+    static Photo selectedValue;
     File file;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,27 +62,27 @@ public class PhotosPage extends AppCompatActivity {
         photos = getPhotosList();
 
         listView = findViewById(R.id.photosList);
+        d = findViewById(R.id.delete_B);
 
         PhotoAdapter adapter = new PhotoAdapter(this, photos);
         listView.setAdapter(adapter);
-
-
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             private static final long DOUBLE_CLICK_TIME_DELTA = 300; // Time in milliseconds for double click
             long lastClickTime = 0;
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 long clickTime = System.currentTimeMillis();
-                selectedValue = (String) parent.getItemAtPosition(position);
-                for(int i = 0; i < albums.size(); i++){
-                    if (albums.get(i).getName().equals(selectedValue)){
-                        currentAlbum = albums.get(i);
+                selectedValue = (Photo) parent.getItemAtPosition(position);
+                for(int i = 0; i < photos.size(); i++){
+                    if (photos.get(i) == selectedValue){
+                        currentPhoto = photos.get(i);
                     }
                 }
                 if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
                     // Double click detected
                     // Open the page here, for example:
-                    Intent intent = new Intent(PhotosPage.this, AddPhotosPage.class);
+                    Intent intent = new Intent(PhotosPage.this, DisplayPage.class);
                     try {
                         writeAlbumList(albums);
                     } catch (IOException e) {
@@ -89,9 +92,22 @@ public class PhotosPage extends AppCompatActivity {
                 }
                 lastClickTime = clickTime;
             }
-        });*/
 
 
+        });
+
+        d.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deletePhoto(v);
+            }
+        });
+
+
+    }
+
+    public static Photo getCurrentPhoto(){
+        return currentPhoto;
     }
 
 
@@ -113,6 +129,29 @@ public class PhotosPage extends AppCompatActivity {
         }
     }
 
+    private void deletePhoto(View view){
+        if (selectedValue != null) {
+            // Start a new activity based on the selected item
+            for(int i = 0; i < albums.size(); i++){
+                if (albums.get(i).getName().equals(currentAlbum.getName())){
+                    for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
+                        if(albums.get(i).getPhotos().get(j) == selectedValue){
+                            albums.get(i).getPhotos().remove(j);
+                            try {
+                                writeAlbumList(albums);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Intent intent = new Intent(PhotosPage.this, PhotosPage.class);
+                            startActivity(intent);
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
@@ -131,7 +170,7 @@ public class PhotosPage extends AppCompatActivity {
                     albums.get(i).add_photo(path);}
             }
             try {
-                writeAlbumList();
+                writeAlbumList(albums);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -163,9 +202,9 @@ public class PhotosPage extends AppCompatActivity {
         }
     }
 
-    public void writeAlbumList() throws FileNotFoundException, IOException{
+    public void writeAlbumList(List<Album> albums) throws FileNotFoundException, IOException{
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(albums);
+            oos.writeObject(this.albums);
             oos.close();
         }
     }
