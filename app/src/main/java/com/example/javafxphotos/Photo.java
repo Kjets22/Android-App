@@ -1,6 +1,7 @@
 package com.example.javafxphotos;
 
 import android.net.Uri;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +27,11 @@ public class Photo implements Serializable {
 
     public void add_tag(Tag e){
         getTags().add(e);
+    }
+
+    public void remove_tag(Tag e){
+        tags.removeIf(tag -> tag.value.equalsIgnoreCase(e.value) &&
+                tag.name.equalsIgnoreCase(e.name));
     }
 
     public void delete_tag(String value, String name){

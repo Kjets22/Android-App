@@ -36,6 +36,6 @@
         android:id="@+id/submit_tag_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="add tag" />
+        android:text="done" />
 
 </LinearLayout>

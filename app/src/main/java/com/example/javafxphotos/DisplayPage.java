@@ -30,6 +30,8 @@ public class DisplayPage extends AppCompatActivity {
     ImageView pic;
     ListView listView;
     List<Tag> tags;
+    private static final int REQUEST_ADD_TAG = 1;
+    private static final int REQUEST_DELETE_TAG = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,12 @@ public class DisplayPage extends AppCompatActivity {
         Bitmap bitmap;
         findViewById(R.id.addTag).setOnClickListener(v -> {
             Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, REQUEST_ADD_TAG);
+        });
+
+        findViewById(R.id.deleteTag).setOnClickListener(v -> {
+            Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
+            startActivityForResult(intent, REQUEST_DELETE_TAG);
         });
         try {
             bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
@@ -58,32 +65,68 @@ public class DisplayPage extends AppCompatActivity {
         TagAdapter adapter = new TagAdapter(this, tags);
         listView.setAdapter(adapter);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             String type = data.getStringExtra("tagType");
             String value = data.getStringExtra("tagValue");
-            Tag tag=new Tag(type, value);
-            for(Photo photo : currentAlbum.getPhotos()){
-                if(currentPhoto.imagePath.equals(photo.imagePath)){
-                    photo.add_tag(tag);
-                    Toast.makeText(this, "found photo", Toast.LENGTH_SHORT).show();
-                    try {
-                        MainActivity.writeAlbumList(MainActivity.albums);
-                    } catch (IOException e) {
-                        System.out.print("e");
-                    }
-                    currentPhoto.add_tag(tag);
-                    break;
-                }
-            }
-            tags=currentPhoto.getTags();
-            TagAdapter adapter = new TagAdapter(this, tags);
-            listView.setAdapter(adapter);
+            Tag tag = new Tag(type, value);
 
+            switch (requestCode) {
+                case REQUEST_ADD_TAG:
+                    addTag(tag);
+                    break;
+                case REQUEST_DELETE_TAG:
+                    deleteTag(tag);
+                    break;
+            }
         }
+    }
+
+    private void refreshListView() {
+        TagAdapter adapter = new TagAdapter(this, tags);
+        listView.setAdapter(adapter);
+    }
+    private void addTag(Tag tag) {
+        for (Photo photo : currentAlbum.getPhotos()) {
+            if (currentPhoto.imagePath.equals(photo.imagePath)) {
+                photo.add_tag(tag);
+                Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
+                try {
+                    MainActivity.writeAlbumList(MainActivity.albums);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                currentPhoto.add_tag(tag);
+                break;
+            }
+        }
+        refreshListView();
+    }
+
+    private void deleteTag(Tag tag) {
+        for (Photo photo : currentAlbum.getPhotos()) {
+            if (currentPhoto.imagePath.equals(photo.imagePath)) {
+                int size=photo.getTags().size();
+                photo.remove_tag(tag); // Assuming there's a method to remove a tag
+                currentPhoto.remove_tag(tag);
+                int newsize=photo.getTags().size();
+                if(size==newsize){
+                    Toast.makeText(this, "Tag was not found", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(this, "Tag deleted", Toast.LENGTH_SHORT).show();
+                }
+                try {
+                    MainActivity.writeAlbumList(MainActivity.albums);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+        tags = currentPhoto.getTags();
+        refreshListView();
     }
 }
 
