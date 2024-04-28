@@ -11,9 +11,9 @@
         android:id="@+id/curPic"
         android:layout_width="283dp"
         android:layout_height="256dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.004"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,14 +39,14 @@
 
     <ListView
         android:id="@+id/tags_list"
-        android:layout_width="123dp"
-        android:layout_height="286dp"
-        android:layout_marginBottom="364dp"
+        android:layout_width="157dp"
+        android:layout_height="204dp"
+        android:layout_marginBottom="224dp"
         android:divider="@color/black"
         android:dividerHeight="1px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/curPic" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

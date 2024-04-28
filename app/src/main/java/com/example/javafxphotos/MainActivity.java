@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public List<String> albumNames;
     private ListView listView;
     static String selectedValue;
-    File file;
+    static File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void writeAlbumList(List <Album> albums) throws FileNotFoundException, IOException{
+    public static void writeAlbumList(List <Album> albums) throws FileNotFoundException, IOException{
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(albums);
             oos.close();
