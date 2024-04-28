@@ -94,6 +94,7 @@ public class DisplayPage extends AppCompatActivity {
                 case REQUEST_MOVE_PHOTO:
                     String targetAlbumName = data.getStringExtra("albumName");
                     movePhotoToAlbum(targetAlbumName);
+
                     break;
             }
         }
@@ -119,7 +120,10 @@ public class DisplayPage extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         found=true;
+                        Intent mainActivityIntent = new Intent(DisplayPage.this, MainActivity.class);
 
+                        startActivity(mainActivityIntent);
+                        finish();
                         break;
                     }
                 }
