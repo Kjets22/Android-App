@@ -110,6 +110,11 @@ public class PhotosPage extends AppCompatActivity {
         return currentPhoto;
     }
 
+    public static Photo setCurrentPhoto(Photo newP){
+        currentPhoto = newP;
+        return currentPhoto;
+    }
+
 
     private void requestStoragePermission() {
         // Log to diagnose
