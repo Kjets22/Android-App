@@ -110,9 +110,22 @@ public class Search extends AppCompatActivity {
                 }
             }
         }
+        List<String> cleaned=new ArrayList<>();
+        boolean in=false;
+        for(int i=0;i<autocomplete.size();i++){
+            in=false;
+            for(int j=0;j<cleaned.size();j++){
+                if(cleaned.get(j).equalsIgnoreCase(autocomplete.get(i))){
+                    in=true;
+                }
+            }
+            if(!in){
+                cleaned.add(autocomplete.get(i));
+            }
+        }
         adapter.clear();
-        if (!autocomplete.isEmpty()) {
-            adapter.addAll(autocomplete);
+        if (!cleaned.isEmpty()) {
+            adapter.addAll(cleaned);
         } else {
             Toast.makeText(this, "not found", Toast.LENGTH_SHORT).show();
         }
