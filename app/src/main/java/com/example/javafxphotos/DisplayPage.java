@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,14 +18,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DisplayPage extends AppCompatActivity {
-
+    List<Album> albums;
     Photo currentPhoto;
     Album currentAlbum;
     ImageView pic;
@@ -32,19 +37,53 @@ public class DisplayPage extends AppCompatActivity {
     List<Tag> tags;
     private static final int REQUEST_ADD_TAG = 1;
     private static final int REQUEST_DELETE_TAG = 2;
+<<<<<<<<< Temporary merge branch 1
+    Bitmap bitmap;
+    File file;
+    Button l;
+    Button r;
+=========
+    private static final int REQUEST_MOVE_PHOTO = 3;
+>>>>>>>>> Temporary merge branch 2
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_page);
+        File filesDir = getFilesDir();
+        String fileName = "file.ser";
+        file = new File(filesDir, fileName);
+        albums = new ArrayList<>();
+        try {
+            albums = readAlbumList();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.print("e");
+        }
+        l = findViewById(R.id.left);
+        l.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            moveLeft(view);
+        }
+    });
+        r = findViewById(R.id.right);
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    moveRight(view);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         pic = findViewById(R.id.curPic);
         listView = findViewById(R.id.tags_list);
         currentPhoto = PhotosPage.getCurrentPhoto();
-        currentAlbum= MainActivity.getCurrentAlbum();
+        currentAlbum = MainActivity.getCurrentAlbum();
         //currentPhoto.add_tag(new Tag("location","my house"));
         tags=currentPhoto.getTags();
         Uri imageUri = Uri.parse(currentPhoto.getPath());
-        Bitmap bitmap;
         findViewById(R.id.addTag).setOnClickListener(v -> {
             Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
             startActivityForResult(intent, REQUEST_ADD_TAG);
@@ -53,6 +92,10 @@ public class DisplayPage extends AppCompatActivity {
         findViewById(R.id.deleteTag).setOnClickListener(v -> {
             Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
             startActivityForResult(intent, REQUEST_DELETE_TAG);
+        });
+        findViewById(R.id.moveto).setOnClickListener(v-> {
+            Intent intent = new Intent(DisplayPage.this, MoveAlbumPage.class);
+            startActivityForResult(intent, REQUEST_MOVE_PHOTO);
         });
         try {
             bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
@@ -69,21 +112,122 @@ public class DisplayPage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            String type = data.getStringExtra("tagType");
-            String value = data.getStringExtra("tagValue");
-            Tag tag = new Tag(type, value);
-
+            String type;
+            String value;
+            Tag tag;
             switch (requestCode) {
                 case REQUEST_ADD_TAG:
+                     type = data.getStringExtra("tagType");
+                     value = data.getStringExtra("tagValue");
+                     tag = new Tag(type, value);
                     addTag(tag);
                     break;
                 case REQUEST_DELETE_TAG:
+                    type = data.getStringExtra("tagType");
+                    value = data.getStringExtra("tagValue");
+                    tag = new Tag(type, value);
+                    addTag(tag);
                     deleteTag(tag);
+                    break;
+                case REQUEST_MOVE_PHOTO:
+                    String targetAlbumName = data.getStringExtra("albumName");
+                    movePhotoToAlbum(targetAlbumName);
+
                     break;
             }
         }
     }
 
+<<<<<<<<< Temporary merge branch 1
+    public void moveLeft(View view){
+        for(int i = 0; i < albums.size(); i++){
+            if(albums.get(i).getName().equals(currentAlbum.getName())){
+                for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
+                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))) {
+                        if (j > 0) {
+                            Photo pic = albums.get(i).getPhotos().get(j - 1);
+                            PhotosPage.setCurrentPhoto(pic);
+                            try {
+                                writeAlbumList(albums);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
+                            startActivity(intent);
+                        } else {
+                            Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the beginning of the slideshow", Toast.LENGTH_SHORT);
+                            error.show();
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void moveRight(View view) throws IOException {
+        for(int i = 0; i < albums.size(); i++){
+            if(albums.get(i).getName().equals(currentAlbum.getName())){
+                for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
+                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))){
+                        if(j+1 < albums.get(i).getPhotos().size()){
+                        Photo pic = albums.get(i).getPhotos().get(j+1);
+                        PhotosPage.setCurrentPhoto(pic);
+                        try {
+                            writeAlbumList(albums);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
+                        startActivity(intent);
+                        }
+                    else{
+                        Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the end of the slideshow", Toast.LENGTH_SHORT);
+                        error.show();
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+=========
+
+
+    private void movePhotoToAlbum(String target) {
+        boolean found=false;
+        Photo findphoto;
+        for (Photo photo : currentAlbum.getPhotos()) {
+            if (currentPhoto.imagePath.equals(photo.imagePath)) {
+                findphoto=photo;
+                currentAlbum.getPhotos().remove(photo);
+                for(Album album: MainActivity.getAlbums()){
+                    if(album.name.equals(target)) {
+
+                        album.add_photo(findphoto);
+                        Toast.makeText(this, "moved", Toast.LENGTH_SHORT).show();
+                        try {
+                            MainActivity.writeAlbumList(MainActivity.albums);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        found=true;
+                        Intent mainActivityIntent = new Intent(DisplayPage.this, MainActivity.class);
+
+                        startActivity(mainActivityIntent);
+                        finish();
+                        break;
+                    }
+                }
+                if (!found){
+                Toast.makeText(this, "name not found", Toast.LENGTH_SHORT).show();}
+            }
+        }
+        refreshListView();
+
+    }
+>>>>>>>>> Temporary merge branch 2
     private void refreshListView() {
         TagAdapter adapter = new TagAdapter(this, tags);
         listView.setAdapter(adapter);
@@ -127,6 +271,22 @@ public class DisplayPage extends AppCompatActivity {
         }
         tags = currentPhoto.getTags();
         refreshListView();
+    }
+
+
+    public List<Album> readAlbumList() throws FileNotFoundException, IOException, ClassNotFoundException{
+        List <Album> deserialized = new ArrayList<Album>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
+            deserialized = (List<Album>) ois.readObject();
+            return deserialized;
+        }
+    }
+
+    public void writeAlbumList(List<Album> albums) throws FileNotFoundException, IOException{
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            oos.writeObject(this.albums);
+            oos.close();
+        }
     }
 }
 
