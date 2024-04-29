@@ -1,5 +1,6 @@
 package com.example.javafxphotos;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -39,22 +40,20 @@ public class Search extends AppCompatActivity {
         // Setup autocomplete adapter
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setAdapter(adapter);
-
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
+                types = selectedRadioButton.getText().toString();
+                // Use selectedText for further processing
+            }
+        });
+        //types = selectedRadioButton.getText().toString();
         // Handle text input for autocomplete
         autoCompleteTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-                RadioButton selectedRadioButton = findViewById(selectedId);
-                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
-                        types = selectedRadioButton.getText().toString();
-                        // Use selectedText for further processing
-                    }
-                });
-                //types = selectedRadioButton.getText().toString();
+
 
             }
 
