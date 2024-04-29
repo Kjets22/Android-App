@@ -23,7 +23,7 @@ public class ResultsPage extends AppCompatActivity {
         // Get the list of photos from the intent
         List<Photo> photos = Search.display;
 
-        Toast.makeText(this, "got into new display", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "got into new display", Toast.LENGTH_SHORT).show();
         PhotoAdapter adapter = new PhotoAdapter(this, photos);
         photoList.setAdapter(adapter);
     }

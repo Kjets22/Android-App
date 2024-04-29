@@ -42,6 +42,12 @@ public class Photo implements Serializable{
             }
         }
     }
+    public boolean same(Photo p){
+        if(p.getTags().size()== tags.size()){
+            return false;
+        }
+        return true;
+    }
 
 }
 

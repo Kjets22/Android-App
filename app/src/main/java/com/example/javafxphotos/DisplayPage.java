@@ -235,15 +235,17 @@ public class DisplayPage extends AppCompatActivity {
     private void addTag(Tag tag) {
         for (Photo photo : currentAlbum.getPhotos()) {
             if (currentPhoto.imagePath.equals(photo.imagePath)) {
-                photo.add_tag(tag);
-                Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
-                try {
-                    writeAlbumList(albums);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (photo.same(currentPhoto)) {
+                    photo.add_tag(tag);
+                    currentPhoto.add_tag(tag);
+                    Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
+                    try {
+                        MainActivity.writeAlbumList(MainActivity.albums);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 }
-                currentPhoto.add_tag(tag);
-                break;
             }
         }
         refreshListView();
