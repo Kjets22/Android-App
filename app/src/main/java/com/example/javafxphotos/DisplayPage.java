@@ -144,7 +144,7 @@ public class DisplayPage extends AppCompatActivity {
         for(int i = 0; i < albums.size(); i++){
             if(albums.get(i).getName().equals(currentAlbum.getName())){
                 for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
-                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))) {
+                    if((albums.get(i).getPhotos().get(j).getId()==(currentPhoto.getId()))) {
                         if (j > 0) {
                             Photo pic = albums.get(i).getPhotos().get(j - 1);
                             PhotosPage.setCurrentPhoto(pic);
@@ -171,7 +171,7 @@ public class DisplayPage extends AppCompatActivity {
         for(int i = 0; i < albums.size(); i++){
             if(albums.get(i).getName().equals(currentAlbum.getName())){
                 for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
-                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))){
+                    if((albums.get(i).getPhotos().get(j).getId()==(currentPhoto.getId()))){
                         if(j+1 < albums.get(i).getPhotos().size()){
                         Photo pic = albums.get(i).getPhotos().get(j+1);
                         PhotosPage.setCurrentPhoto(pic);
