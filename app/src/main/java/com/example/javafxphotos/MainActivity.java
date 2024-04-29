@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     static String selectedValue;
     static File file;
 
+    public static int lastId = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

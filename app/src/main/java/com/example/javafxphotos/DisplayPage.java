@@ -234,8 +234,9 @@ public class DisplayPage extends AppCompatActivity {
     }
     private void addTag(Tag tag) {
         for (Photo photo : currentAlbum.getPhotos()) {
+            Toast.makeText(this, photo.getId()+"photo id  currentPhoto id "+currentPhoto.getId(), Toast.LENGTH_SHORT).show();
             if (currentPhoto.imagePath.equals(photo.imagePath)) {
-                if (photo.same(currentPhoto)) {
+                if (photo.getId()==currentPhoto.getId()) {
                     photo.add_tag(tag);
                     currentPhoto.add_tag(tag);
                     Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
@@ -244,7 +245,7 @@ public class DisplayPage extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    break;
+                    //break;
                 }
             }
         }

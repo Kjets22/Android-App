@@ -78,7 +78,7 @@ public class PhotosPage extends AppCompatActivity {
                     if (photos.get(i) == selectedValue){
                         currentPhoto = photos.get(i);
                     }
-                }
+                }//maybe the error is here mabye come back and check
                 if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
                     // Double click detected
                     // Open the page here, for example:

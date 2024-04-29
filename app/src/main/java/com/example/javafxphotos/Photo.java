@@ -9,11 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Photo implements Serializable{
+    //private static int lastId = 0; // Static variable to keep track of the last used ID
+    private int id;
     String imagePath;
     private List<Tag> tags = new ArrayList<>();
     private static final long serialVersionUID = 1L;
     public Photo(String imagePath){
         this.imagePath = imagePath;
+        this.id = MainActivity.lastId++; // Assign a unique ID to each new instanc
+    }
+    public int getId() {
+        return id; // Getter to retrieve the instance's ID
     }
 
     public String getPath(){
