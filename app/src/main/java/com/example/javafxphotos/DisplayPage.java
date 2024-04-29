@@ -126,7 +126,6 @@ public class DisplayPage extends AppCompatActivity {
                     type = data.getStringExtra("tagType");
                     value = data.getStringExtra("tagValue");
                     tag = new Tag(type, value);
-                    addTag(tag);
                     deleteTag(tag);
                     break;
                 case REQUEST_MOVE_PHOTO:
@@ -234,8 +233,8 @@ public class DisplayPage extends AppCompatActivity {
     }
     private void addTag(Tag tag) {
         for (Photo photo : currentAlbum.getPhotos()) {
-            Toast.makeText(this, photo.getId()+"photo id  currentPhoto id "+currentPhoto.getId(), Toast.LENGTH_SHORT).show();
-            if (currentPhoto.imagePath.equals(photo.imagePath)) {
+            //Toast.makeText(this, photo.getId()+"photo id  currentPhoto id "+currentPhoto.getId(), Toast.LENGTH_SHORT).show();
+            //if (currentPhoto.imagePath.equals(photo.imagePath)) {
                 if (photo.getId()==currentPhoto.getId()) {
                     photo.add_tag(tag);
                     currentPhoto.add_tag(tag);
@@ -245,16 +244,17 @@ public class DisplayPage extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    //break;
+                    refreshListView();
+                    return;
                 }
-            }
+            //}
         }
-        refreshListView();
+
     }
 
     private void deleteTag(Tag tag) {
         for (Photo photo : currentAlbum.getPhotos()) {
-            if (currentPhoto.imagePath.equals(photo.imagePath)) {
+            if (photo.getId()==currentPhoto.getId()) {
                 int size=photo.getTags().size();
                 photo.remove_tag(tag); // Assuming there's a method to remove a tag
                 currentPhoto.remove_tag(tag);
@@ -269,11 +269,11 @@ public class DisplayPage extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                break;
+                tags = currentPhoto.getTags();
+                refreshListView();
+                return;
             }
         }
-        tags = currentPhoto.getTags();
-        refreshListView();
     }
 
 
