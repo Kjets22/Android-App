@@ -149,7 +149,7 @@ public class DisplayPage extends AppCompatActivity {
                             Photo pic = albums.get(i).getPhotos().get(j - 1);
                             PhotosPage.setCurrentPhoto(pic);
                             try {
-                                writeAlbumList(albums);
+                                MainActivity.writeAlbumList(MainActivity.albums);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
