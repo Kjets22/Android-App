@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,18 +17,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DisplayPage extends AppCompatActivity {
-    List<Album> albums;
+
     Photo currentPhoto;
     Album currentAlbum;
     ImageView pic;
@@ -37,49 +32,19 @@ public class DisplayPage extends AppCompatActivity {
     List<Tag> tags;
     private static final int REQUEST_ADD_TAG = 1;
     private static final int REQUEST_DELETE_TAG = 2;
-    Bitmap bitmap;
-    File file;
-    Button l;
-    Button r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_page);
-        File filesDir = getFilesDir();
-        String fileName = "file.ser";
-        file = new File(filesDir, fileName);
-        albums = new ArrayList<>();
-        try {
-            albums = readAlbumList();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.print("e");
-        }
-        l = findViewById(R.id.left);
-        l.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            moveLeft(view);
-        }
-    });
-        r = findViewById(R.id.right);
-        r.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    moveRight(view);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
         pic = findViewById(R.id.curPic);
         listView = findViewById(R.id.tags_list);
         currentPhoto = PhotosPage.getCurrentPhoto();
-        currentAlbum = MainActivity.getCurrentAlbum();
+        currentAlbum= MainActivity.getCurrentAlbum();
         //currentPhoto.add_tag(new Tag("location","my house"));
         tags=currentPhoto.getTags();
         Uri imageUri = Uri.parse(currentPhoto.getPath());
+        Bitmap bitmap;
         findViewById(R.id.addTag).setOnClickListener(v -> {
             Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
             startActivityForResult(intent, REQUEST_ADD_TAG);
@@ -115,59 +80,6 @@ public class DisplayPage extends AppCompatActivity {
                 case REQUEST_DELETE_TAG:
                     deleteTag(tag);
                     break;
-            }
-        }
-    }
-
-    public void moveLeft(View view){
-        for(int i = 0; i < albums.size(); i++){
-            if(albums.get(i).getName().equals(currentAlbum.getName())){
-                for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
-                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))) {
-                        if (j > 0) {
-                            Photo pic = albums.get(i).getPhotos().get(j - 1);
-                            PhotosPage.setCurrentPhoto(pic);
-                            try {
-                                writeAlbumList(albums);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
-                            startActivity(intent);
-                        } else {
-                            Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the beginning of the slideshow", Toast.LENGTH_SHORT);
-                            error.show();
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    public void moveRight(View view) throws IOException {
-        for(int i = 0; i < albums.size(); i++){
-            if(albums.get(i).getName().equals(currentAlbum.getName())){
-                for(int j = 0; j < albums.get(i).getPhotos().size(); j++){
-                    if((albums.get(i).getPhotos().get(j).getPath().equals(currentPhoto.getPath()))){
-                        if(j+1 < albums.get(i).getPhotos().size()){
-                        Photo pic = albums.get(i).getPhotos().get(j+1);
-                        PhotosPage.setCurrentPhoto(pic);
-                        try {
-                            writeAlbumList(albums);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
-                        startActivity(intent);
-                        }
-                    else{
-                        Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the end of the slideshow", Toast.LENGTH_SHORT);
-                        error.show();
-                        }
-                        return;
-                    }
-                }
             }
         }
     }
@@ -215,22 +127,6 @@ public class DisplayPage extends AppCompatActivity {
         }
         tags = currentPhoto.getTags();
         refreshListView();
-    }
-
-
-    public List<Album> readAlbumList() throws FileNotFoundException, IOException, ClassNotFoundException{
-        List <Album> deserialized = new ArrayList<Album>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
-            deserialized = (List<Album>) ois.readObject();
-            return deserialized;
-        }
-    }
-
-    public void writeAlbumList(List<Album> albums) throws FileNotFoundException, IOException{
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(this.albums);
-            oos.close();
-        }
     }
 }
 
