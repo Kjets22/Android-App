@@ -80,9 +80,11 @@ public class DisplayPage extends AppCompatActivity {
         pic = findViewById(R.id.curPic);
         listView = findViewById(R.id.tags_list);
         currentPhoto = PhotosPage.getCurrentPhoto();
+        //Toast.makeText(this, " id "+ currentPhoto.getId(), Toast.LENGTH_SHORT).show();
         currentAlbum = MainActivity.getCurrentAlbum();
         //currentPhoto.add_tag(new Tag("location","my house"));
         tags=currentPhoto.getTags();
+        refreshListView();
         Uri imageUri = Uri.parse(currentPhoto.getPath());
         findViewById(R.id.addTag).setOnClickListener(v -> {
             Intent intent = new Intent(DisplayPage.this, AddTagPage.class);
@@ -153,6 +155,7 @@ public class DisplayPage extends AppCompatActivity {
                             }
                             Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
                             startActivity(intent);
+                            finish();
                         } else {
                             Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the beginning of the slideshow", Toast.LENGTH_SHORT);
                             error.show();
@@ -173,12 +176,13 @@ public class DisplayPage extends AppCompatActivity {
                         Photo pic = albums.get(i).getPhotos().get(j+1);
                         PhotosPage.setCurrentPhoto(pic);
                         try {
-                            writeAlbumList(albums);
+                            MainActivity.writeAlbumList(MainActivity.albums);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         Intent intent = new Intent(DisplayPage.this, DisplayPage.class);
                         startActivity(intent);
+                        finish();
                         }
                     else{
                         Toast error = Toast.makeText(DisplayPage.this, "Error, you have reached the end of the slideshow", Toast.LENGTH_SHORT);
@@ -236,14 +240,16 @@ public class DisplayPage extends AppCompatActivity {
             //Toast.makeText(this, photo.getId()+"photo id  currentPhoto id "+currentPhoto.getId(), Toast.LENGTH_SHORT).show();
             //if (currentPhoto.imagePath.equals(photo.imagePath)) {
                 if (photo.getId()==currentPhoto.getId()) {
-                    //photo.add_tag(tag);
-                    currentPhoto.add_tag(tag);
+                    photo.add_tag(tag);
+                    //currentPhoto.add_tag(tag);
                     Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
                     try {
                         MainActivity.writeAlbumList(MainActivity.albums);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    //currentPhoto=photo;
+                    tags = photo.getTags();
                     refreshListView();
                     return;
                 }
@@ -256,8 +262,8 @@ public class DisplayPage extends AppCompatActivity {
         for (Photo photo : currentAlbum.getPhotos()) {
             if (photo.getId()==currentPhoto.getId()) {
                 int size=photo.getTags().size();
-                //photo.remove_tag(tag); // Assuming there's a method to remove a tag
-                currentPhoto.remove_tag(tag);
+                photo.remove_tag(tag); // Assuming there's a method to remove a tag
+                //currentPhoto.remove_tag(tag);
                 int newsize=photo.getTags().size();
                 if(size==newsize){
                     Toast.makeText(this, "Tag was not found", Toast.LENGTH_SHORT).show();
@@ -269,7 +275,8 @@ public class DisplayPage extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                tags = currentPhoto.getTags();
+                //currentPhoto=photo;
+                tags = photo.getTags();
                 refreshListView();
                 return;
             }

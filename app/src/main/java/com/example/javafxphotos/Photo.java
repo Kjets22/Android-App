@@ -37,14 +37,20 @@ public class Photo implements Serializable{
     }
 
     public void remove_tag(Tag e){
-        tags.removeIf(tag -> tag.value.equalsIgnoreCase(e.value) &&
-                tag.name.equalsIgnoreCase(e.name));
+        for (Tag tag : tags){
+            if(tag.value.equalsIgnoreCase(e.value) &&
+                    tag.name.equalsIgnoreCase(e.name)){
+                tags.remove(tag);
+                return;
+            }
+        }
     }
 
     public void delete_tag(String value, String name){
         for (Tag tag : tags){
             if(value == tag.getName() && name == tag.getValue()){
                 tags.remove(tag);
+
             }
         }
     }
