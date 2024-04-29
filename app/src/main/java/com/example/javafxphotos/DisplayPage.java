@@ -37,14 +37,14 @@ public class DisplayPage extends AppCompatActivity {
     List<Tag> tags;
     private static final int REQUEST_ADD_TAG = 1;
     private static final int REQUEST_DELETE_TAG = 2;
-<<<<<<<<< Temporary merge branch 1
+
     Bitmap bitmap;
     File file;
     Button l;
     Button r;
-=========
+
     private static final int REQUEST_MOVE_PHOTO = 3;
->>>>>>>>> Temporary merge branch 2
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,7 @@ public class DisplayPage extends AppCompatActivity {
         }
     }
 
-<<<<<<<<< Temporary merge branch 1
+
     public void moveLeft(View view){
         for(int i = 0; i < albums.size(); i++){
             if(albums.get(i).getName().equals(currentAlbum.getName())){
@@ -192,7 +192,7 @@ public class DisplayPage extends AppCompatActivity {
         }
     }
 
-=========
+
 
 
     private void movePhotoToAlbum(String target) {
@@ -227,7 +227,7 @@ public class DisplayPage extends AppCompatActivity {
         refreshListView();
 
     }
->>>>>>>>> Temporary merge branch 2
+
     private void refreshListView() {
         TagAdapter adapter = new TagAdapter(this, tags);
         listView.setAdapter(adapter);
@@ -238,7 +238,7 @@ public class DisplayPage extends AppCompatActivity {
                 photo.add_tag(tag);
                 Toast.makeText(this, "Tag added", Toast.LENGTH_SHORT).show();
                 try {
-                    MainActivity.writeAlbumList(MainActivity.albums);
+                    writeAlbumList(albums);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
