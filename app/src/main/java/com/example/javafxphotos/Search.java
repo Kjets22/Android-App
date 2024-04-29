@@ -46,12 +46,25 @@ public class Search extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 RadioButton selectedRadioButton = findViewById(selectedId);
-                types = selectedRadioButton.getText().toString();
+                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        RadioButton selectedRadioButton = (RadioButton) group.findViewById(checkedId);
+                        types = selectedRadioButton.getText().toString();
+                        // Use selectedText for further processing
+                    }
+                });
+                //types = selectedRadioButton.getText().toString();
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateAutocomplete(s.toString());
+                if(types.isEmpty()){
+                    Toast.makeText(Search.this, "you need to fill in type first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                    updateAutocomplete(s.toString());
             }
 
             @Override
@@ -95,10 +108,6 @@ public class Search extends AppCompatActivity {
 
     private void updateAutocomplete(String query) {
         search=query;
-        if(types.isEmpty()){
-            Toast.makeText(this, "you need to fill in type first", Toast.LENGTH_SHORT).show();
-            return;
-        }
         // Simulate an autocomplete function
         List<String> autocomplete=new ArrayList<>();
         for (Album album : albums){
