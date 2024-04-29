@@ -53,11 +53,13 @@ public class PhotosPage extends AppCompatActivity {
                 requestStoragePermission();
             }});
         albums = new ArrayList<>();
+        albums = MainActivity.albums;
+        /*
         try {
             albums = readAlbumList();
         } catch (IOException | ClassNotFoundException e) {
             System.out.print("e");
-        }
+        }*/
         currentAlbum = MainActivity.getCurrentAlbum();
         photos = getPhotosList();
 
@@ -175,7 +177,7 @@ public class PhotosPage extends AppCompatActivity {
                     albums.get(i).add_photo(path);}
             }
             try {
-                writeAlbumList(albums);
+                MainActivity.writeAlbumList(MainActivity.albums);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
